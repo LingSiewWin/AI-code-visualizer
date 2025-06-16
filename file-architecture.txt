@@ -1,0 +1,138 @@
+# 🧠 AI Code Visualizer - Repository Architecture
+
+## 📁 Project Structure
+
+```
+ai-code-visualizer/
+├── 📄 README.md
+├── 📄 LICENSE
+├── 📄 package.json
+├── 📄 package-lock.json
+├── 📄 .gitignore
+├── 📄 .env.example
+├── 📄 docker-compose.yml
+├── 📄 Dockerfile
+├── 📄 vercel.json
+│
+├── 🗂️ src/
+│   ├── 📄 App.jsx
+│   ├── 📄 main.jsx
+│   ├── 📄 index.css
+│   │
+│   ├── 🗂️ components/
+│   │   ├── 📄 AICodeVisualizer.jsx         # Main component (current artifact)
+│   │   ├── 📄 Navbar.jsx
+│   │   ├── 📄 RepositoryInput.jsx
+│   │   ├── 📄 ThreeScene.jsx
+│   │   ├── 📄 AnalysisPanel.jsx
+│   │   ├── 📄 InsightsPanel.jsx
+│   │   ├── 📄 FileExplorer.jsx
+│   │   ├── 📄 CodeMetrics.jsx
+│   │   └── 📄 LoadingSpinner.jsx
+│   │
+│   ├── 🗂️ hooks/
+│   │   ├── 📄 useRepositoryAnalysis.js
+│   │   ├── 📄 useThreeScene.js
+│   │   ├── 📄 useGitHubAPI.js
+│   │   └── 📄 useAIInsights.js
+│   │
+│   ├── 🗂️ services/
+│   │   ├── 📄 githubAPI.js
+│   │   ├── 📄 aiAnalyzer.js
+│   │   ├── 📄 codeParser.js
+│   │   ├── 📄 complexityAnalyzer.js
+│   │   └── 📄 dependencyMapper.js
+│   │
+│   ├── 🗂️ utils/
+│   │   ├── 📄 constants.js
+│   │   ├── 📄 helpers.js
+│   │   ├── 📄 threeHelpers.js
+│   │   ├── 📄 colorSchemes.js
+│   │   └── 📄 dataTransformers.js
+│   │
+│   ├── 🗂️ styles/
+│   │   ├── 📄 globals.css
+│   │   ├── 📄 components.css
+│   │   └── 📄 animations.css
+│   │
+│   └── 🗂️ assets/
+│       ├── 🗂️ icons/
+│       ├── 🗂️ images/
+│       └── 🗂️ models/
+│
+├── 🗂️ server/
+│   ├── 📄 server.js
+│   ├── 📄 package.json
+│   │
+│   ├── 🗂️ routes/
+│   │   ├── 📄 analyze.js
+│   │   ├── 📄 github.js
+│   │   └── 📄 ai.js
+│   │
+│   ├── 🗂️ controllers/
+│   │   ├── 📄 analysisController.js
+│   │   ├── 📄 githubController.js
+│   │   └── 📄 aiController.js
+│   │
+│   ├── 🗂️ services/
+│   │   ├── 📄 openaiService.js
+│   │   ├── 📄 githubService.js
+│   │   ├── 📄 codeAnalysisService.js
+│   │   └── 📄 cachingService.js
+│   │
+│   ├── 🗂️ middleware/
+│   │   ├── 📄 auth.js
+│   │   ├── 📄 rateLimiter.js
+│   │   └── 📄 errorHandler.js
+│   │
+│   └── 🗂️ utils/
+│       ├── 📄 logger.js
+│       ├── 📄 validators.js
+│       └── 📄 parsers.js
+│
+├── 🗂️ public/
+│   ├── 📄 index.html
+│   ├── 📄 favicon.ico
+│   ├── 📄 manifest.json
+│   └── 🗂️ static/
+│       ├── 🗂️ images/
+│       └── 🗂️ icons/
+│
+├── 🗂️ tests/
+│   ├── 🗂️ unit/
+│   │   ├── 📄 components.test.js
+│   │   ├── 📄 services.test.js
+│   │   └── 📄 utils.test.js
+│   │
+│   ├── 🗂️ integration/
+│   │   ├── 📄 api.test.js
+│   │   └── 📄 analysis.test.js
+│   │
+│   └── 🗂️ e2e/
+│       ├── 📄 visualization.test.js
+│       └── 📄 user-flow.test.js
+│
+├── 🗂️ docs/
+│   ├── 📄 API.md
+│   ├── 📄 CONTRIBUTING.md
+│   ├── 📄 DEPLOYMENT.md
+│   ├── 📄 ARCHITECTURE.md
+│   └── 🗂️ screenshots/
+│
+├── 🗂️ scripts/
+│   ├── 📄 build.sh
+│   ├── 📄 deploy.sh
+│   ├── 📄 setup.sh
+│   └── 📄 analyze-performance.js
+│
+└── 🗂️ .github/
+    ├── 🗂️ workflows/
+    │   ├── 📄 ci.yml
+    │   ├── 📄 cd.yml
+    │   └── 📄 security.yml
+    │
+    └── 🗂️ ISSUE_TEMPLATE/
+        ├── 📄 bug_report.md
+        └── 📄 feature_request.md
+```
+
