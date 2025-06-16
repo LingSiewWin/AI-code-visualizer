@@ -20,10 +20,10 @@ ai-code-visualizer/
 │   ├── 📄 index.css
 │   │
 │   ├── 🗂️ components/
-│   │   ├── 📄 AICodeVisualizer.jsx         # Main component (current artifact)
-│   │   ├── 📄 Navbar.jsx
-│   │   ├── 📄 RepositoryInput.jsx
-│   │   ├── 📄 ThreeScene.jsx
+│   │   ├── 📄 AICodeVisualizer.jsx         /
+│   │   ├── 📄 Navbar.jsx                   /
+│   │   ├── 📄 RepositoryInput.jsx          /
+│   │   ├── 📄 ThreeScene.jsx               /
 │   │   ├── 📄 AnalysisPanel.jsx
 │   │   ├── 📄 InsightsPanel.jsx
 │   │   ├── 📄 FileExplorer.jsx
