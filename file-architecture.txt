@@ -24,22 +24,22 @@ ai-code-visualizer/
 │   │   ├── 📄 Navbar.jsx                   /
 │   │   ├── 📄 RepositoryInput.jsx          /
 │   │   ├── 📄 ThreeScene.jsx               /
-│   │   ├── 📄 AnalysisPanel.jsx
-│   │   ├── 📄 InsightsPanel.jsx
-│   │   ├── 📄 FileExplorer.jsx
-│   │   ├── 📄 CodeMetrics.jsx
-│   │   └── 📄 LoadingSpinner.jsx
+│   │   ├── 📄 AnalysisPanel.jsx            /
+│   │   ├── 📄 InsightsPanel.jsx            /
+│   │   ├── 📄 FileExplorer.jsx             /
+│   │   ├── 📄 CodeMetrics.jsx              /
+│   │   └── 📄 LoadingSpinner.jsx           /
 │   │
 │   ├── 🗂️ hooks/
-│   │   ├── 📄 useRepositoryAnalysis.js
-│   │   ├── 📄 useThreeScene.js
-│   │   ├── 📄 useGitHubAPI.js
-│   │   └── 📄 useAIInsights.js
+│   │   ├── 📄 useRepositoryAnalysis.js     /
+│   │   ├── 📄 useThreeScene.js             /
+│   │   ├── 📄 useGitHubAPI.js              /
+│   │   └── 📄 useAIInsights.js             /
 │   │
 │   ├── 🗂️ services/
-│   │   ├── 📄 githubAPI.js
-│   │   ├── 📄 aiAnalyzer.js
-│   │   ├── 📄 codeParser.js
+│   │   ├── 📄 githubAPI.js                 /
+│   │   ├── 📄 aiAnalyzer.js                /
+│   │   ├── 📄 codeParser.js                /
 │   │   ├── 📄 complexityAnalyzer.js
 │   │   └── 📄 dependencyMapper.js
 │   │
