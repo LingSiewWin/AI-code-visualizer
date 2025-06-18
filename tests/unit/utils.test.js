@@ -836,7 +836,746 @@ describe('Three.js Helpers', () => {
     it('should animate node position', () => {
       const node = { position: { x: 0, y: 0, z: 0 } };
       const targetPosition = { x: 1, y: 1, z: 1 };
-      const animation = animateNodePosition(node, targetPosition);
+      const animation = animateNodeScale(node, targetScale);
+      expect(animation).toBeDefined();
+    });
+  });
+
+  describe('Node updates', () => {
+    it('should update node position', () => {
+      const node = { position: { set: vi.fn() } };
+      const position = { x: 1, y: 2, z: 3 };
+      updateNodePosition(node, position);
+      expect(node.position.set).toHaveBeenCalledWith(1, 2, 3);
+    });
+
+    it('should update node color', () => {
+      const node = { material: { color: { set: vi.fn() } } };
+      const color = '#ff0000';
+      updateNodeColor(node, color);
+      expect(node.material.color.set).toHaveBeenCalled();
+    });
+
+    it('should update node scale', () => {
+      const node = { scale: { set: vi.fn() } };
+      const scale = { x: 2, y: 2, z: 2 };
+      updateNodeScale(node, scale);
+      expect(node.scale.set).toHaveBeenCalledWith(2, 2, 2);
+    });
+  });
+
+  describe('Calculations', () => {
+    it('should calculate node positions', () => {
+      const data = { depth: 2, index: 1, total: 5 };
+      const position = calculateNodePosition(data);
+      expect(position).toHaveProperty('x');
+      expect(position).toHaveProperty('y');
+      expect(position).toHaveProperty('z');
+    });
+
+    it('should calculate node sizes', () => {
+      const data = { size: 1000, complexity: 5 };
+      const size = calculateNodeSize(data);
+      expect(typeof size).toBe('number');
+      expect(size).toBeGreaterThan(0);
+    });
+
+    it('should calculate node colors', () => {
+      const data = { language: 'javascript', complexity: 3 };
+      const color = calculateNodeColor(data);
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+  });
+
+  describe('Particle system', () => {
+    it('should create particle system', () => {
+      const config = { count: 100, size: 0.1 };
+      const particles = createParticleSystem(config);
+      expect(particles).toBeDefined();
+    });
+
+    it('should update particle system', () => {
+      const particles = { geometry: { attributes: { position: { needsUpdate: false } } } };
+      const deltaTime = 0.016;
+      updateParticleSystem(particles, deltaTime);
+      expect(particles.geometry.attributes.position.needsUpdate).toBe(true);
+    });
+  });
+
+  describe('Geometry and materials', () => {
+    it('should create geometries', () => {
+      const geometry = createGeometry('box', { width: 1, height: 1, depth: 1 });
+      expect(geometry).toBeDefined();
+    });
+
+    it('should create materials', () => {
+      const material = createMaterial('basic', { color: 0xff0000 });
+      expect(material).toBeDefined();
+    });
+
+    it('should create meshes', () => {
+      const geometry = { dispose: vi.fn() };
+      const material = { dispose: vi.fn() };
+      const mesh = createMesh(geometry, material);
+      expect(mesh).toBeDefined();
+    });
+
+    it('should dispose meshes properly', () => {
+      const mesh = {
+        geometry: { dispose: vi.fn() },
+        material: { dispose: vi.fn() },
+        parent: { remove: vi.fn() }
+      };
+      disposeMesh(mesh);
+      expect(mesh.geometry.dispose).toHaveBeenCalled();
+      expect(mesh.material.dispose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Scene optimization', () => {
+    it('should optimize scene', () => {
+      const scene = {
+        traverse: vi.fn((callback) => {
+          // Simulate traversing scene objects
+          callback({ type: 'Mesh', visible: true });
+        })
+      };
+      optimizeScene(scene);
+      expect(scene.traverse).toHaveBeenCalled();
+    });
+
+    it('should calculate bounding box', () => {
+      const objects = [
+        { position: { x: 0, y: 0, z: 0 } },
+        { position: { x: 10, y: 10, z: 10 } }
+      ];
+      const bbox = calculateBoundingBox(objects);
+      expect(bbox).toHaveProperty('min');
+      expect(bbox).toHaveProperty('max');
+    });
+  });
+
+  describe('Raycasting', () => {
+    it('should get intersections', () => {
+      const mouse = { x: 0, y: 0 };
+      const camera = {};
+      const objects = [];
+      const intersections = getIntersections(mouse, camera, objects);
+      expect(Array.isArray(intersections)).toBe(true);
+    });
+
+    it('should convert screen to world coordinates', () => {
+      const screenPos = { x: 100, y: 100 };
+      const camera = {};
+      const worldPos = screenToWorld(screenPos, camera);
+      expect(worldPos).toHaveProperty('x');
+      expect(worldPos).toHaveProperty('y');
+      expect(worldPos).toHaveProperty('z');
+    });
+
+    it('should convert world to screen coordinates', () => {
+      const worldPos = { x: 1, y: 1, z: 1 };
+      const camera = {};
+      const renderer = { domElement: { width: 800, height: 600 } };
+      const screenPos = worldToScreen(worldPos, camera, renderer);
+      expect(screenPos).toHaveProperty('x');
+      expect(screenPos).toHaveProperty('y');
+    });
+  });
+
+  describe('Camera controls', () => {
+    it('should add orbit controls', () => {
+      const camera = {};
+      const domElement = document.createElement('canvas');
+      const controls = addOrbitControls(camera, domElement);
+      expect(controls).toBeDefined();
+    });
+
+    it('should reset camera', () => {
+      const camera = {
+        position: { set: vi.fn() },
+        lookAt: vi.fn()
+      };
+      resetCamera(camera);
+      expect(camera.position.set).toHaveBeenCalled();
+      expect(camera.lookAt).toHaveBeenCalled();
+    });
+
+    it('should focus on object', () => {
+      const camera = {
+        position: { copy: vi.fn() },
+        lookAt: vi.fn()
+      };
+      const object = { position: { x: 1, y: 1, z: 1 } };
+      focusOnObject(camera, object);
+      expect(camera.lookAt).toHaveBeenCalled();
+    });
+  });
+
+  describe('Visual effects', () => {
+    it('should create wireframe', () => {
+      const geometry = {};
+      const wireframe = createWireframe(geometry);
+      expect(wireframe).toBeDefined();
+    });
+
+    it('should create glow effect', () => {
+      const object = {};
+      const glow = createGlow(object);
+      expect(glow).toBeDefined();
+    });
+
+    it('should add post processing', () => {
+      const renderer = {};
+      const scene = {};
+      const camera = {};
+      const composer = addPostProcessing(renderer, scene, camera);
+      expect(composer).toBeDefined();
+    });
+  });
+
+  describe('Import/Export', () => {
+    it('should export scene', () => {
+      const scene = {};
+      const exported = exportScene(scene);
+      expect(exported).toBeDefined();
+      expect(typeof exported).toBe('string');
+    });
+
+    it('should import scene', () => {
+      const sceneData = '{"objects":[]}';
+      const scene = importScene(sceneData);
+      expect(scene).toBeDefined();
+    });
+  });
+});
+
+describe('Color Schemes', () => {
+  describe('Color constants', () => {
+    it('should have default colors', () => {
+      expect(DEFAULT_COLORS).toBeDefined();
+      expect(typeof DEFAULT_COLORS).toBe('object');
+    });
+
+    it('should have language colors', () => {
+      expect(LANGUAGE_COLORS).toBeDefined();
+      expect(LANGUAGE_COLORS.javascript).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(LANGUAGE_COLORS.python).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should have complexity colors', () => {
+      expect(COMPLEXITY_COLORS).toBeDefined();
+      expect(COMPLEXITY_COLORS.low).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(COMPLEXITY_COLORS.medium).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(COMPLEXITY_COLORS.high).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should have theme colors', () => {
+      expect(THEME_COLORS).toBeDefined();
+      expect(THEME_COLORS.light).toBeDefined();
+      expect(THEME_COLORS.dark).toBeDefined();
+    });
+  });
+
+  describe('Color getter functions', () => {
+    it('should get color by language', () => {
+      const color = getColorByLanguage('javascript');
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should get color by complexity', () => {
+      const color = getColorByComplexity(5);
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should get color by type', () => {
+      const color = getColorByType('file');
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should get color by depth', () => {
+      const color = getColorByDepth(3);
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should get color by size', () => {
+      const color = getColorBySize(1000);
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+  });
+
+  describe('Color manipulation', () => {
+    it('should interpolate colors', () => {
+      const color1 = '#ff0000';
+      const color2 = '#0000ff';
+      const interpolated = interpolateColor(color1, color2, 0.5);
+      expect(interpolated).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should generate color palettes', () => {
+      const palette = generateColorPalette(5);
+      expect(Array.isArray(palette)).toBe(true);
+      expect(palette).toHaveLength(5);
+      palette.forEach(color => {
+        expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+      });
+    });
+
+    it('should adjust color brightness', () => {
+      const original = '#808080';
+      const brighter = adjustColorBrightness(original, 0.2);
+      const darker = adjustColorBrightness(original, -0.2);
+      
+      expect(brighter).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(darker).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(brighter).not.toBe(original);
+      expect(darker).not.toBe(original);
+    });
+
+    it('should get random colors', () => {
+      const color = getRandomColor();
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+
+    it('should create gradients', () => {
+      const gradient = createGradient(['#ff0000', '#00ff00', '#0000ff']);
+      expect(gradient).toBeDefined();
+      expect(typeof gradient).toBe('function');
+      
+      const color = gradient(0.5);
+      expect(color).toMatch(/^#[0-9a-f]{6}$/i);
+    });
+  });
+
+  describe('Theme handling', () => {
+    it('should apply themes', () => {
+      const element = document.createElement('div');
+      applyTheme(element, 'dark');
+      expect(element.dataset.theme).toBe('dark');
+    });
+  });
+
+  describe('Color validation and conversion', () => {
+    it('should validate colors', () => {
+      expect(validateColor('#ff0000')).toBe(true);
+      expect(validateColor('#FFF')).toBe(true);
+      expect(validateColor('rgb(255, 0, 0)')).toBe(true);
+      expect(validateColor('invalid')).toBe(false);
+    });
+
+    it('should convert colors to hex', () => {
+      expect(colorToHex('rgb(255, 0, 0)')).toBe('#ff0000');
+      expect(colorToHex('#ff0000')).toBe('#ff0000');
+    });
+
+    it('should convert colors to RGB', () => {
+      const rgb = colorToRgb('#ff0000');
+      expect(rgb).toEqual({ r: 255, g: 0, b: 0 });
+    });
+
+    it('should convert colors to HSL', () => {
+      const hsl = colorToHsl('#ff0000');
+      expect(hsl).toHaveProperty('h');
+      expect(hsl).toHaveProperty('s');
+      expect(hsl).toHaveProperty('l');
+    });
+  });
+});
+
+describe('Data Transformers', () => {
+  describe('Data transformation', () => {
+    it('should transform repository data', () => {
+      const repoData = {
+        name: 'test-repo',
+        description: 'Test repository',
+        language: 'JavaScript',
+        stars: 100,
+        forks: 20
+      };
+      
+      const transformed = transformRepositoryData(repoData);
+      expect(transformed).toBeDefined();
+      expect(transformed.name).toBe('test-repo');
+    });
+
+    it('should transform file data', () => {
+      const fileData = {
+        name: 'index.js',
+        path: '/src/index.js',
+        size: 1024,
+        content: 'console.log("Hello");'
+      };
+      
+      const transformed = transformFileData(fileData);
+      expect(transformed).toBeDefined();
+      expect(transformed.name).toBe('index.js');
+    });
+
+    it('should transform analysis data', () => {
+      const analysisData = {
+        complexity: 5,
+        maintainability: 8,
+        testCoverage: 75,
+        dependencies: ['lodash', 'react']
+      };
+      
+      const transformed = transformAnalysisData(analysisData);
+      expect(transformed).toBeDefined();
+      expect(transformed.complexity).toBe(5);
+    });
+
+    it('should transform metrics data', () => {
+      const metricsData = {
+        linesOfCode: 1000,
+        functions: 50,
+        classes: 10,
+        files: 25
+      };
+      
+      const transformed = transformMetricsData(metricsData);
+      expect(transformed).toBeDefined();
+      expect(transformed.linesOfCode).toBe(1000);
+    });
+
+    it('should transform visualization data', () => {
+      const vizData = {
+        nodes: [{ id: 1, name: 'node1' }],
+        edges: [{ source: 1, target: 2 }]
+      };
+      
+      const transformed = transformVisualizationData(vizData);
+      expect(transformed).toBeDefined();
+      expect(transformed.nodes).toHaveLength(1);
+    });
+  });
+
+  describe('Data operations', () => {
+    it('should normalize data', () => {
+      const data = [1, 2, 3, 4, 5];
+      const normalized = normalizeData(data);
+      expect(normalized.every(val => val >= 0 && val <= 1)).toBe(true);
+    });
+
+    it('should aggregate data', () => {
+      const data = [
+        { category: 'A', value: 10 },
+        { category: 'A', value: 20 },
+        { category: 'B', value: 15 }
+      ];
+      
+      const aggregated = aggregateData(data, 'category', 'sum');
+      expect(aggregated.A).toBe(30);
+      expect(aggregated.B).toBe(15);
+    });
+
+    it('should filter data', () => {
+      const data = [
+        { name: 'file1.js', size: 100 },
+        { name: 'file2.js', size: 200 },
+        { name: 'file3.css', size: 50 }
+      ];
+      
+      const filtered = filterData(data, item => item.size > 75);
+      expect(filtered).toHaveLength(2);
+    });
+
+    it('should sort data', () => {
+      const data = [
+        { name: 'c', value: 3 },
+        { name: 'a', value: 1 },
+        { name: 'b', value: 2 }
+      ];
+      
+      const sorted = sortData(data, 'value');
+      expect(sorted[0].name).toBe('a');
+      expect(sorted[2].name).toBe('c');
+    });
+
+    it('should group data', () => {
+      const data = [
+        { type: 'js', name: 'file1' },
+        { type: 'js', name: 'file2' },
+        { type: 'css', name: 'file3' }
+      ];
+      
+      const grouped = groupData(data, 'type');
+      expect(grouped.js).toHaveLength(2);
+      expect(grouped.css).toHaveLength(1);
+    });
+
+    it('should flatten data', () => {
+      const data = {
+        level1: {
+          level2: {
+            value: 'test'
+          }
+        }
+      };
+      
+      const flattened = flattenData(data);
+      expect(flattened['level1.level2.value']).toBe('test');
+    });
+
+    it('should restructure data', () => {
+      const data = [
+        ['name', 'age'],
+        ['John', 30],
+        ['Jane', 25]
+      ];
+      
+      const restructured = restructureData(data);
+      expect(restructured).toHaveLength(2);
+      expect(restructured[0].name).toBe('John');
+      expect(restructured[0].age).toBe(30);
+    });
+  });
+
+  describe('Data validation and cleaning', () => {
+    it('should validate data', () => {
+      const validData = { name: 'test', value: 42 };
+      const invalidData = { name: '', value: null };
+      
+      expect(validateData(validData)).toBe(true);
+      expect(validateData(invalidData)).toBe(false);
+    });
+
+    it('should clean data', () => {
+      const dirtyData = {
+        name: '  Test  ',
+        value: null,
+        empty: '',
+        undefined: undefined
+      };
+      
+      const cleaned = cleanData(dirtyData);
+      expect(cleaned.name).toBe('Test');
+      expect(cleaned).not.toHaveProperty('value');
+      expect(cleaned).not.toHaveProperty('empty');
+      expect(cleaned).not.toHaveProperty('undefined');
+    });
+  });
+
+  describe('Specialized processors', () => {
+    it('should process code metrics', () => {
+      const code = `
+        function test() {
+          if (true) {
+            return 'hello';
+          }
+        }
+      `;
+      
+      const metrics = processCodeMetrics(code);
+      expect(metrics).toHaveProperty('lines');
+      expect(metrics).toHaveProperty('functions');
+      expect(metrics).toHaveProperty('complexity');
+    });
+
+    it('should process complexity data', () => {
+      const complexityData = {
+        cyclomatic: 5,
+        cognitive: 8,
+        halstead: { difficulty: 3, effort: 100 }
+      };
+      
+      const processed = processComplexityData(complexityData);
+      expect(processed).toHaveProperty('overall');
+      expect(processed).toHaveProperty('details');
+    });
+
+    it('should process dependency data', () => {
+      const dependencies = [
+        { name: 'react', version: '^18.0.0', type: 'production' },
+        { name: 'jest', version: '^29.0.0', type: 'development' }
+      ];
+      
+      const processed = processDependencyData(dependencies);
+      expect(processed).toHaveProperty('production');
+      expect(processed).toHaveProperty('development');
+    });
+
+    it('should process git data', () => {
+      const gitData = {
+        commits: [
+          { hash: 'abc123', message: 'Initial commit', date: '2023-01-01' },
+          { hash: 'def456', message: 'Add feature', date: '2023-01-02' }
+        ],
+        branches: ['main', 'develop'],
+        contributors: ['user1', 'user2']
+      };
+      
+      const processed = processGitData(gitData);
+      expect(processed).toHaveProperty('commitCount');
+      expect(processed).toHaveProperty('branchCount');
+      expect(processed).toHaveProperty('contributorCount');
+    });
+
+    it('should process AI insights', () => {
+      const insights = [
+        { type: 'suggestion', message: 'Consider refactoring this function', confidence: 0.8 },
+        { type: 'warning', message: 'Potential memory leak', confidence: 0.9 }
+      ];
+      
+      const processed = processAIInsights(insights);
+      expect(processed).toHaveProperty('suggestions');
+      expect(processed).toHaveProperty('warnings');
+      expect(processed).toHaveProperty('averageConfidence');
+    });
+  });
+
+  describe('Statistics and summary', () => {
+    it('should calculate statistics', () => {
+      const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const stats = calculateStatistics(data);
+      
+      expect(stats).toHaveProperty('mean');
+      expect(stats).toHaveProperty('median');
+      expect(stats).toHaveProperty('mode');
+      expect(stats).toHaveProperty('standardDeviation');
+      expect(stats.mean).toBe(5.5);
+    });
+
+    it('should generate summary', () => {
+      const data = {
+        files: 100,
+        lines: 10000,
+        functions: 500,
+        complexity: 3.5
+      };
+      
+      const summary = generateSummary(data);
+      expect(summary).toHaveProperty('fileCount');
+      expect(summary).toHaveProperty('averageComplexity');
+      expect(summary).toHaveProperty('recommendations');
+    });
+  });
+
+  describe('Formatting functions', () => {
+    it('should format for visualization', () => {
+      const data = {
+        nodes: [{ id: 1, name: 'test' }],
+        edges: [{ source: 1, target: 2 }]
+      };
+      
+      const formatted = formatForVisualization(data);
+      expect(formatted).toHaveProperty('nodes');
+      expect(formatted).toHaveProperty('links');
+    });
+
+    it('should format for export', () => {
+      const data = { test: 'value' };
+      const csvFormatted = formatForExport(data, 'csv');
+      const jsonFormatted = formatForExport(data, 'json');
+      
+      expect(typeof csvFormatted).toBe('string');
+      expect(typeof jsonFormatted).toBe('string');
+    });
+  });
+
+  describe('Parsing functions', () => {
+    it('should parse CSV', () => {
+      const csvData = 'name,age\nJohn,30\nJane,25';
+      const parsed = parseCSV(csvData);
+      
+      expect(Array.isArray(parsed)).toBe(true);
+      expect(parsed).toHaveLength(2);
+      expect(parsed[0].name).toBe('John');
+    });
+
+    it('should parse JSON', () => {
+      const jsonData = '{"name": "test", "value": 42}';
+      const parsed = parseJSON(jsonData);
+      
+      expect(parsed.name).toBe('test');
+      expect(parsed.value).toBe(42);
+    });
+
+    it('should parse XML', () => {
+      const xmlData = '<root><item name="test" value="42"/></root>';
+      const parsed = parseXML(xmlData);
+      
+      expect(parsed).toBeDefined();
+    });
+  });
+
+  describe('Conversion and serialization', () => {
+    it('should convert to different formats', () => {
+      const data = [{ name: 'test', value: 42 }];
+      
+      const csv = convertToFormat(data, 'csv');
+      const json = convertToFormat(data, 'json');
+      const xml = convertToFormat(data, 'xml');
+      
+      expect(typeof csv).toBe('string');
+      expect(typeof json).toBe('string');
+      expect(typeof xml).toBe('string');
+    });
+
+    it('should serialize and deserialize data', () => {
+      const data = { test: 'value', number: 42 };
+      
+      const serialized = serializeData(data);
+      const deserialized = deserializeData(serialized);
+      
+      expect(typeof serialized).toBe('string');
+      expect(deserialized).toEqual(data);
+    });
+  });
+});
+
+describe('Error handling', () => {
+  it('should handle invalid inputs gracefully', () => {
+    expect(() => formatFileSize('invalid')).not.toThrow();
+    expect(() => formatDate('invalid')).not.toThrow();
+    expect(() => getLanguageFromExtension(null)).not.toThrow();
+    expect(() => calculateComplexity(null)).not.toThrow();
+  });
+
+  it('should handle edge cases', () => {
+    expect(formatFileSize(0)).toBe('0 Bytes');
+    expect(truncateString('', 10)).toBe('');
+    expect(unique([])).toEqual([]);
+    expect(chunk([], 2)).toEqual([]);
+  });
+
+  it('should handle null and undefined values', () => {
+    expect(isEmpty(null)).toBe(true);
+    expect(isEmpty(undefined)).toBe(true);
+    expect(deepClone(null)).toBe(null);
+    expect(deepClone(undefined)).toBe(undefined);
+  });
+});
+
+describe('Performance', () => {
+  it('should handle large datasets efficiently', () => {
+    const largeArray = Array.from({ length: 10000 }, (_, i) => ({ id: i, value: Math.random() }));
+    
+    const start = performance.now();
+    const sorted = sortBy(largeArray, 'value');
+    const end = performance.now();
+    
+    expect(sorted).toHaveLength(10000);
+    expect(end - start).toBeLessThan(100); // Should complete in under 100ms
+  });
+
+  it('should debounce function calls efficiently', () => {
+    vi.useFakeTimers();
+    const fn = vi.fn();
+    const debouncedFn = debounce(fn, 100);
+    
+    // Call function multiple times rapidly
+    for (let i = 0; i < 100; i++) {
+      debouncedFn();
+    }
+    
+    expect(fn).not.toHaveBeenCalled();
+    
+    vi.advanceTimersByTime(100);
+    expect(fn).toHaveBeenCalledTimes(1);
+    
+    vi.useRealTimers();
+  });
+});NodePosition(node, targetPosition);
       expect(animation).toBeDefined();
     });
 
