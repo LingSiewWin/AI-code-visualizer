@@ -75,20 +75,20 @@ ai-code-visualizer/
 │   │   └── 📄 aiController.js         ✅
 │   │
 │   ├── 🗂️ services/
-│   │   ├── 📄 openaiService.js
-│   │   ├── 📄 githubService.js
-│   │   ├── 📄 codeAnalysisService.js
-│   │   └── 📄 cachingService.js
+│   │   ├── 📄 openaiService.js        ✅
+│   │   ├── 📄 githubService.js        ✅
+│   │   ├── 📄 codeAnalysisService.js  ✅
+│   │   └── 📄 cachingService.js       ✅
 │   │
 │   ├── 🗂️ middleware/
-│   │   ├── 📄 auth.js
-│   │   ├── 📄 rateLimiter.js
-│   │   └── 📄 errorHandler.js
+│   │   ├── 📄 auth.js              ✅
+│   │   ├── 📄 rateLimiter.js       ✅
+│   │   └── 📄 errorHandler.js      ✅
 │   │
 │   └── 🗂️ utils/
-│       ├── 📄 logger.js
-│       ├── 📄 validators.js
-│       └── 📄 parsers.js
+│       ├── 📄 logger.js            ✅
+│       ├── 📄 validators.js        ✅
+│       └── 📄 parsers.js           ✅
 │
 ├── 🗂️ public/
 │   ├── 📄 index.html
@@ -100,9 +100,9 @@ ai-code-visualizer/
 │
 ├── 🗂️ tests/
 │   ├── 🗂️ unit/
-│   │   ├── 📄 components.test.js
-│   │   ├── 📄 services.test.js
-│   │   └── 📄 utils.test.js
+│   │   ├── 📄 components.test.js    ✅
+│   │   ├── 📄 services.test.js      ✅
+│   │   └── 📄 utils.test.js         halfway
 │   │
 │   ├── 🗂️ integration/
 │   │   ├── 📄 api.test.js
