@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
-import { threeHelpers } from '../utils/threeHelpers';
-import { colorSchemes } from '../utils/colorSchemes';
+import { threeHelpers } from '../../utils/threeHelpers';
+import { colorSchemes } from '../../utils/colorSchemes';
 
 export const useThreeScene = (containerRef, data = null) => {
   const [state, setState] = useState({
