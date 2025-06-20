@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Code Visualizer - Transform your GitHub repositories into stunning 3D visualizations with AI-powered insights and analysis." />
+  <meta name="keywords" content="code visualization, GitHub, AI analysis, 3D visualization, repository analysis, code metrics" />
+  <meta name="author" content="AI Code Visualizer Team" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ai-code-visualizer.vercel.app/" />
+  <meta property="og:title" content="AI Code Visualizer - Visualize Your Code in 3D" />
+  <meta property="og:description" content="Transform your GitHub repositories into stunning 3D visualizations with AI-powered insights and analysis." />
+  <meta property="og:image" content="/static/images/og-preview.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://ai-code-visualizer.vercel.app/" />
+  <meta property="twitter:title" content="AI Code Visualizer - Visualize Your Code in 3D" />
+  <meta property="twitter:description" content="Transform your GitHub repositories into stunning 3D visualizations with AI-powered insights and analysis." />
+  <meta property="twitter:image" content="/static/images/twitter-preview.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png" />
+  <link rel="manifest" href="/manifest.json" />
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="msapplication-TileColor" content="#1a1a2e" />
+  
+  <!-- Preconnect to external domains for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.github.com" />
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  
+  <!-- CSS Variables for theming -->
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --secondary-color: #8b5cf6;
+      --accent-color: #06b6d4;
+      --background-color: #0f0f23;
+      --surface-color: #1a1a2e;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --border-color: #374151;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --border-radius: 8px;
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-family);
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Loading screen styles */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--background-color) 0%, var(--surface-color) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    .loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 2rem;
+      animation: pulse 2s infinite;
+    }
+    
+    .loading-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .loading-subtext {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top: 3px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-top: 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .loading-logo {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .loading-text {
+        font-size: 1.125rem;
+      }
+      
+      .loading-subtext {
+        font-size: 0.8rem;
+      }
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--surface-color);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+    
+    /* Selection styling */
+    ::selection {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    ::-moz-selection {
+      background: var(--primary-color);
+      color: white;
+    }
+  </style>
+
+  <title>AI Code Visualizer - Visualize Your Code in 3D</title>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <svg class="loading-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="35" stroke="url(#gradient)" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220">
+        <animate attributeName="stroke-dashoffset" dur="2s" values="220;0;220" repeatCount="indefinite"/>
+      </circle>
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#6366f1"/>
+          <stop offset="50%" style="stop-color:#8b5cf6"/>
+          <stop offset="100%" style="stop-color:#06b6d4"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="loading-text">AI Code Visualizer</div>
+    <div class="loading-subtext">Loading your 3D code visualization platform...</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- React App Root -->
+  <div id="root"></div>
+
+  <!-- Error Fallback -->
+  <noscript>
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; padding: 2rem;">
+      <h1 style="color: var(--error-color); margin-bottom: 1rem;">JavaScript Required</h1>
+      <p style="color: var(--text-secondary); max-width: 500px;">
+        AI Code Visualizer requires JavaScript to run. Please enable JavaScript in your browser settings and refresh the page.
+      </p>
+    </div>
+  </noscript>
+
+  <!-- Performance and Analytics -->
+  <script>
+    // Performance monitoring
+    window.addEventListener('load', function() {
+      const loadTime = performance.now();
+      console.log(`Page loaded in ${loadTime.toFixed(2)}ms`);
+      
+      // Hide loading screen after app loads
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.classList.add('hidden');
+          setTimeout(() => {
+            loadingScreen.remove();
+          }, 500);
+        }
+      }, 1000);
+    });
+
+    // Error handling
+    window.addEventListener('error', function(e) {
+      console.error('Global error:', e.error);
+    });
+
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+    });
+
+    // Theme detection
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark-theme');
+    }
+
+    // Service Worker registration (if available)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js')
+          .then(function(registration) {
+            console.log('SW registered: ', registration);
+          })
+          .catch(function(registrationError) {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
+
+  <!-- Module script will be injected by Vite during build -->
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
