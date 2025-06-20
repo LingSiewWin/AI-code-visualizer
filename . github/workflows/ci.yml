@@ -1,0 +1,457 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18.x'
+  PYTHON_VERSION: '3.9'
+
+jobs:
+  # Job 1: Code Quality and Linting
+  code-quality:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Run Prettier check
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: Check for unused dependencies
+        run: npx depcheck
+
+      - name: Analyze bundle size
+        run: npm run analyze:bundle
+        continue-on-error: true
+
+  # Job 2: Unit Tests
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Run frontend unit tests
+        run: npm run test:unit
+        env:
+          CI: true
+
+      - name: Run backend unit tests
+        run: cd server && npm run test:unit
+        env:
+          CI: true
+
+      - name: Generate coverage report
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  # Job 3: Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd redis-cli ping --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Start backend server
+        run: |
+          cd server
+          npm run start:test &
+          sleep 10
+        env:
+          NODE_ENV: test
+          REDIS_URL: redis://localhost:6379
+          TEST_GITHUB_TOKEN: ${{ secrets.TEST_GITHUB_TOKEN }}
+
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          CI: true
+          API_BASE_URL: http://localhost:3001
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: integration-test-results
+          path: test-results/
+
+  # Job 4: E2E Tests
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Start application
+        run: |
+          npm run start:prod &
+          cd server && npm run start:prod &
+          sleep 15
+        env:
+          NODE_ENV: production
+          PORT: 3000
+          SERVER_PORT: 3001
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          TEST_BASE_URL: http://localhost:3000
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results
+          path: |
+            test-results/
+            playwright-report/
+
+      - name: Upload E2E screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: e2e-screenshots
+          path: test-results/
+
+  # Job 5: Build and Test Docker Images
+  docker-build:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: ai-code-visualizer:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Docker image
+        run: |
+          docker run --rm -d -p 3000:3000 --name test-container ai-code-visualizer:test
+          sleep 10
+          curl -f http://localhost:3000 || exit 1
+          docker stop test-container
+
+      - name: Run security scan on Docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ai-code-visualizer:test'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Job 6: Performance Tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Start application
+        run: |
+          npm run start:prod &
+          cd server && npm run start:prod &
+          sleep 15
+        env:
+          NODE_ENV: production
+
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.12.x autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Run load tests
+        run: npm run test:load
+        continue-on-error: true
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-results
+          path: |
+            .lighthouseci/
+            load-test-results/
+
+  # Job 7: Accessibility Tests
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: |
+          npm run start:prod &
+          sleep 10
+        env:
+          NODE_ENV: production
+
+      - name: Run axe accessibility tests
+        run: npm run test:a11y
+
+      - name: Upload accessibility results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: accessibility-results
+          path: accessibility-results/
+
+  # Job 8: Dependency Check
+  dependency-check:
+    name: Dependency Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=high
+          cd server && npm audit --audit-level=high
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+        continue-on-error: true
+
+      - name: Check for known vulnerabilities
+        run: |
+          npx better-npm-audit audit --level high
+          cd server && npx better-npm-audit audit --level high
+
+  # Job 9: Code Coverage Analysis
+  coverage-analysis:
+    name: Code Coverage Analysis
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd server && npm ci
+
+      - name: Generate combined coverage report
+        run: npm run test:coverage:combined
+
+      - name: Check coverage thresholds
+        run: npm run test:coverage:check
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info,./server/coverage/lcov.info
+          flags: combined
+          name: combined-coverage
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
+
+  # Job 10: Build Status Summary
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: [
+      code-quality,
+      unit-tests,
+      integration-tests,
+      e2e-tests,
+      docker-build,
+      performance-tests,
+      accessibility-tests,
+      dependency-check,
+      coverage-analysis
+    ]
+    if: always()
+    
+    steps:
+      - name: Generate build summary
+        run: |
+          echo "## CI Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | ${{ needs.unit-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | ${{ needs.integration-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | ${{ needs.e2e-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker Build | ${{ needs.docker-build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance Tests | ${{ needs.performance-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Accessibility Tests | ${{ needs.accessibility-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Check | ${{ needs.dependency-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage Analysis | ${{ needs.coverage-analysis.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Post build status to Slack
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: "CI Build failed on ${{ github.ref }}"
