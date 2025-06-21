@@ -1,0 +1,655 @@
+/* =============================================================================
+   AI Code Visualizer - Animations & Transitions
+   ============================================================================= */
+
+/* Animation Variables */
+:root {
+    --animation-speed-fast: 0.15s;
+    --animation-speed-normal: 0.3s;
+    --animation-speed-slow: 0.6s;
+    --animation-speed-slower: 1s;
+    --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --animation-easing-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  /* =============================================================================
+     Loading Animations
+     ============================================================================= */
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes wave {
+    0%, 100% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(1.5);
+    }
+  }
+  
+  .loading-spinner {
+    animation: spin var(--animation-speed-slower) linear infinite;
+  }
+  
+  .loading-pulse {
+    animation: pulse var(--animation-speed-slow) ease-in-out infinite;
+  }
+  
+  .loading-bounce {
+    animation: bounce var(--animation-speed-slow) ease-in-out infinite;
+  }
+  
+  .loading-wave {
+    animation: wave var(--animation-speed-slow) ease-in-out infinite;
+  }
+  
+  .loading-wave:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  
+  .loading-wave:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  
+  .loading-wave:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+  
+  /* =============================================================================
+     Fade Animations
+     ============================================================================= */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .fade-out {
+    animation: fadeOut var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .fade-in-up {
+    animation: fadeInUp var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .fade-in-down {
+    animation: fadeInDown var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .fade-in-left {
+    animation: fadeInLeft var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .fade-in-right {
+    animation: fadeInRight var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  /* =============================================================================
+     Scale Animations
+     ============================================================================= */
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes scaleOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+  
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes zoomOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+  }
+  
+  .scale-in {
+    animation: scaleIn var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .scale-out {
+    animation: scaleOut var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .zoom-in {
+    animation: zoomIn var(--animation-speed-normal) var(--animation-easing-bounce) forwards;
+  }
+  
+  .zoom-out {
+    animation: zoomOut var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  /* =============================================================================
+     Slide Animations
+     ============================================================================= */
+  
+  @keyframes slideInUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideOutUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+  
+  @keyframes slideOutDown {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+  
+  @keyframes slideOutLeft {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  
+  .slide-in-up {
+    animation: slideInUp var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-in-down {
+    animation: slideInDown var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-in-left {
+    animation: slideInLeft var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-in-right {
+    animation: slideInRight var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-out-up {
+    animation: slideOutUp var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-out-down {
+    animation: slideOutDown var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-out-left {
+    animation: slideOutLeft var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .slide-out-right {
+    animation: slideOutRight var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  /* =============================================================================
+     Special Effects
+     ============================================================================= */
+  
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6);
+    }
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200px 0;
+    }
+    100% {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+  
+  @keyframes typewriter {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes wiggle {
+    0%, 7% {
+      transform: rotateZ(0);
+    }
+    15% {
+      transform: rotateZ(-15deg);
+    }
+    20% {
+      transform: rotateZ(10deg);
+    }
+    25% {
+      transform: rotateZ(-10deg);
+    }
+    30% {
+      transform: rotateZ(6deg);
+    }
+    35% {
+      transform: rotateZ(-4deg);
+    }
+    40%, 100% {
+      transform: rotateZ(0);
+    }
+  }
+  
+  .glow-effect {
+    animation: glow var(--animation-speed-slow) ease-in-out infinite alternate;
+  }
+  
+  .shimmer-effect {
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.2) 20%, 
+      rgba(255, 255, 255, 0.5) 60%, 
+      rgba(255, 255, 255, 0)
+    );
+    background-size: 200px 100%;
+    animation: shimmer var(--animation-speed-slow) infinite;
+  }
+  
+  .typewriter-effect {
+    overflow: hidden;
+    border-right: 2px solid rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+    animation: 
+      typewriter var(--animation-speed-slower) steps(40, end),
+      blink 0.75s step-end infinite;
+  }
+  
+  .float-effect {
+    animation: float var(--animation-speed-slower) ease-in-out infinite;
+  }
+  
+  .wiggle-effect {
+    animation: wiggle var(--animation-speed-slow) ease-in-out;
+  }
+  
+  /* =============================================================================
+     Interactive Hover Effects
+     ============================================================================= */
+  
+  .hover-scale {
+    transition: transform var(--animation-speed-fast) var(--animation-easing);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+  
+  .hover-lift {
+    transition: transform var(--animation-speed-fast) var(--animation-easing),
+                box-shadow var(--animation-speed-fast) var(--animation-easing);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .hover-glow {
+    transition: box-shadow var(--animation-speed-normal) var(--animation-easing);
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  }
+  
+  .hover-rotate {
+    transition: transform var(--animation-speed-fast) var(--animation-easing);
+  }
+  
+  .hover-rotate:hover {
+    transform: rotate(5deg);
+  }
+  
+  .hover-slide {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hover-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.2), 
+      transparent
+    );
+    transition: left var(--animation-speed-normal) var(--animation-easing);
+  }
+  
+  .hover-slide:hover::before {
+    left: 100%;
+  }
+  
+  /* =============================================================================
+     Staggered Animations
+     ============================================================================= */
+  
+  .stagger-animation {
+    animation: fadeInUp var(--animation-speed-normal) var(--animation-easing) forwards;
+  }
+  
+  .stagger-animation:nth-child(1) { animation-delay: 0ms; }
+  .stagger-animation:nth-child(2) { animation-delay: 100ms; }
+  .stagger-animation:nth-child(3) { animation-delay: 200ms; }
+  .stagger-animation:nth-child(4) { animation-delay: 300ms; }
+  .stagger-animation:nth-child(5) { animation-delay: 400ms; }
+  .stagger-animation:nth-child(6) { animation-delay: 500ms; }
+  
+  /* =============================================================================
+     Code Visualization Specific Animations
+     ============================================================================= */
+  
+  @keyframes codeHighlight {
+    0%, 100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: rgba(59, 130, 246, 0.2);
+    }
+  }
+  
+  @keyframes connectionDraw {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  @keyframes nodeAppear {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(180deg);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.8) rotate(90deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  
+  @keyframes dataFlow {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  .code-highlight {
+    animation: codeHighlight var(--animation-speed-slow) ease-in-out infinite;
+  }
+  
+  .connection-draw {
+    stroke-dasharray: 100;
+    animation: connectionDraw var(--animation-speed-slower) var(--animation-easing) forwards;
+  }
+  
+  .node-appear {
+    animation: nodeAppear var(--animation-speed-normal) var(--animation-easing-bounce) forwards;
+  }
+  
+  .data-flow {
+    animation: dataFlow var(--animation-speed-slower) linear infinite;
+  }
+  
+  /* =============================================================================
+     Responsive Animation Controls
+     ============================================================================= */
+  
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    
+    .loading-spinner,
+    .loading-pulse,
+    .loading-bounce,
+    .loading-wave {
+      animation: none;
+    }
+  }
+  
+  /* Performance optimizations */
+  .will-animate {
+    will-change: transform, opacity;
+  }
+  
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  /* =============================================================================
+     Utility Classes
+     ============================================================================= */
+  
+  .animation-paused {
+    animation-play-state: paused !important;
+  }
+  
+  .animation-running {
+    animation-play-state: running !important;
+  }
+  
+  .no-animation {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .smooth-transition {
+    transition: all var(--animation-speed-normal) var(--animation-easing);
+  }
+  
+  .fast-transition {
+    transition: all var(--animation-speed-fast) var(--animation-easing);
+  }
+  
+  .slow-transition {
+    transition: all var(--animation-speed-slow) var(--animation-easing);
+  }
