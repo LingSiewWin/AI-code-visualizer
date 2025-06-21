@@ -1,0 +1,19 @@
+# Development
+npm start              # Start frontend only
+npm run dev           # Start frontend + backend
+npm run server:dev    # Start backend only
+
+# Testing & Quality
+npm run test:unit     # Unit tests with coverage
+npm run test:e2e      # End-to-end tests
+npm run lint          # Fix linting issues
+npm run format        # Format code
+
+# Analysis & Performance
+npm run analyze               # Bundle size analysis
+npm run analyze:performance   # Performance metrics
+
+# Deployment
+npm run build         # Production build
+npm run deploy        # Deploy to Vercel
+npm run docker:dev    # Docker development
