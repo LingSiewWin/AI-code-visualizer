@@ -1,0 +1,192 @@
+{
+    "name": "ai-code-visualizer",
+    "version": "1.0.0",
+    "description": "An AI-powered 3D code repository visualizer that transforms GitHub repositories into interactive 3D landscapes",
+    "main": "src/index.js",
+    "homepage": "https://ai-code-visualizer.vercel.app",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/your-username/ai-code-visualizer.git"
+    },
+    "bugs": {
+      "url": "https://github.com/your-username/ai-code-visualizer/issues"
+    },
+    "keywords": [
+      "ai",
+      "code-visualization",
+      "3d",
+      "github",
+      "repository-analysis",
+      "three.js",
+      "react",
+      "code-metrics",
+      "developer-tools",
+      "visualization"
+    ],
+    "author": {
+      "name": "Your Name",
+      "email": "your.email@example.com",
+      "url": "https://your-website.com"
+    },
+    "license": "MIT",
+    "private": false,
+    "engines": {
+      "node": ">=16.0.0",
+      "npm": ">=8.0.0"
+    },
+    "scripts": {
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject",
+      "server": "cd server && npm start",
+      "server:dev": "cd server && npm run dev",
+      "dev": "concurrently \"npm start\" \"npm run server:dev\"",
+      "build:prod": "npm run build && cd server && npm run build",
+      "preview": "npm run build && serve -s build -l 3000",
+      "lint": "eslint src/ --ext .js,.jsx --fix",
+      "lint:check": "eslint src/ --ext .js,.jsx",
+      "format": "prettier --write \"src/**/*.{js,jsx,json,css,md}\"",
+      "format:check": "prettier --check \"src/**/*.{js,jsx,json,css,md}\"",
+      "test:unit": "react-scripts test --watchAll=false --coverage",
+      "test:integration": "jest tests/integration --passWithNoTests",
+      "test:e2e": "cypress run",
+      "test:e2e:open": "cypress open",
+      "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
+      "analyze": "npm run build && npx bundle-analyzer build/static/js/*.js",
+      "analyze:performance": "node scripts/analyze-performance.js",
+      "setup": "chmod +x scripts/setup.sh && ./scripts/setup.sh",
+      "docker:build": "docker build -t ai-code-visualizer .",
+      "docker:run": "docker run -p 3000:3000 -p 3001:3001 ai-code-visualizer",
+      "docker:dev": "docker-compose up --build",
+      "docker:prod": "docker-compose -f docker-compose.prod.yml up --build",
+      "deploy": "vercel --prod",
+      "deploy:preview": "vercel",
+      "clean": "rm -rf build node_modules/.cache",
+      "clean:all": "npm run clean && rm -rf node_modules && cd server && rm -rf node_modules",
+      "postinstall": "cd server && npm install",
+      "precommit": "npm run lint:check && npm run format:check && npm run test:unit",
+      "prepare": "husky install",
+      "storybook": "storybook dev -p 6006",
+      "build-storybook": "storybook build"
+    },
+    "dependencies": {
+      "@testing-library/jest-dom": "^5.16.5",
+      "@testing-library/react": "^13.4.0",
+      "@testing-library/user-event": "^14.4.3",
+      "axios": "^1.4.0",
+      "d3": "^7.8.5",
+      "framer-motion": "^10.12.16",
+      "lodash": "^4.17.21",
+      "lucide-react": "^0.263.1",
+      "mathjs": "^11.9.1",
+      "papaparse": "^5.4.1",
+      "plotly.js": "^2.24.1",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0",
+      "react-router-dom": "^6.12.1",
+      "react-scripts": "5.0.1",
+      "recharts": "^2.7.2",
+      "three": "^0.153.0",
+      "tone": "^14.7.77",
+      "web-vitals": "^3.3.2"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.22.5",
+      "@babel/preset-env": "^7.22.5",
+      "@babel/preset-react": "^7.22.5",
+      "@storybook/addon-essentials": "^7.0.24",
+      "@storybook/addon-interactions": "^7.0.24",
+      "@storybook/addon-links": "^7.0.24",
+      "@storybook/blocks": "^7.0.24",
+      "@storybook/preset-create-react-app": "^7.0.24",
+      "@storybook/react": "^7.0.24",
+      "@storybook/react-vite": "^7.0.24",
+      "@storybook/testing-library": "^0.2.0",
+      "autoprefixer": "^10.4.14",
+      "concurrently": "^8.2.0",
+      "cypress": "^12.15.0",
+      "eslint": "^8.42.0",
+      "eslint-config-prettier": "^8.8.0",
+      "eslint-plugin-react": "^7.32.2",
+      "eslint-plugin-react-hooks": "^4.6.0",
+      "husky": "^8.0.3",
+      "jest": "^27.5.1",
+      "jest-environment-jsdom": "^27.5.1",
+      "lint-staged": "^13.2.2",
+      "postcss": "^8.4.24",
+      "prettier": "^2.8.8",
+      "prop-types": "^15.8.1",
+      "puppeteer": "^20.5.0",
+      "serve": "^14.2.0",
+      "source-map-explorer": "^2.5.3",
+      "tailwindcss": "^3.3.2",
+      "webpack-bundle-analyzer": "^4.9.0"
+    },
+    "eslintConfig": {
+      "extends": [
+        "react-app",
+        "react-app/jest",
+        "prettier"
+      ],
+      "rules": {
+        "no-unused-vars": "warn",
+        "no-console": "warn",
+        "react/prop-types": "warn",
+        "react-hooks/exhaustive-deps": "warn"
+      }
+    },
+    "prettier": {
+      "semi": true,
+      "trailingComma": "es5",
+      "singleQuote": true,
+      "printWidth": 80,
+      "tabWidth": 2,
+      "useTabs": false
+    },
+    "lint-staged": {
+      "src/**/*.{js,jsx}": [
+        "eslint --fix",
+        "prettier --write"
+      ],
+      "src/**/*.{json,css,md}": [
+        "prettier --write"
+      ]
+    },
+    "husky": {
+      "hooks": {
+        "pre-commit": "lint-staged",
+        "pre-push": "npm run test:unit"
+      }
+    },
+    "jest": {
+      "collectCoverageFrom": [
+        "src/**/*.{js,jsx}",
+        "!src/index.js",
+        "!src/reportWebVitals.js",
+        "!src/**/*.test.{js,jsx}",
+        "!src/**/*.stories.{js,jsx}"
+      ],
+      "coverageThreshold": {
+        "global": {
+          "branches": 70,
+          "functions": 70,
+          "lines": 70,
+          "statements": 70
+        }
+      }
+    },
+    "browserslist": {
+      "production": [
+        ">0.2%",
+        "not dead",
+        "not op_mini all"
+      ],
+      "development": [
+        "last 1 chrome version",
+        "last 1 firefox version",
+        "last 1 safari version"
+      ]
+    },
+    "proxy": "http://localhost:3001"
+  }
